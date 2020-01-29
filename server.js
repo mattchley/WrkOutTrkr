@@ -1,4 +1,5 @@
 const express = require("express");
+var path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 
@@ -18,20 +19,21 @@ app.use(express.static("public"));
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populatedb", { useNewUrlParser: true });
 
 // HTML Routes
-// app.get("/", function (req, res) {
+app.get("/", function (req, res) {
  
-//   res.sendFile(path.join(__dirname, "../public/index.html"));
-// });
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
-// app.get("/exercise", function (req, res) {
+app.get("/exercise", function (req, res) {
   
-//   res.sendFile(path.join(__dirname, "../public/exercise.html"));
-// });
+  res.sendFile(path.join(__dirname, "./public/exercise.html"));
 
-// app.get("/stats", function (req, res) {
+});
+
+app.get("/stats", function (req, res) {
   
-//   res.sendFile(path.join(__dirname, "../public/stats.html"));
-// });
+  res.sendFile(path.join(__dirname, "./public/stats.html"));
+});
 
 
 // API Routes
