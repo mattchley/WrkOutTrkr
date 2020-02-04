@@ -82,76 +82,17 @@ module.exports = function (app) {
     }
   });
 
-  ////////////////////////////
-
-
-
-
-  // Get route for retrieving a single post
-  app.get("/api/posts/:id", function (req, res) {
-    // Here we add an "include" property to our options in our findOne query
-    // We set the value to an array of the models we want to include in a left outer join
-    // In this case, just db.Author
-    db.Post.findOne({
-      where: {
-        id: req.params.id
-      },
-      include: [db.Author]
-    }).then(function (dbPost) {
-      res.json(dbPost);
-    });
-  });
 
   // POST route for saving a new post
   app.post("/api/workouts", function (req, res) {
-    // console.log(new Date().setDate(new Date().getDate()))
-    const workout =new Workout();
+    const workout = new Workout();
     workout.day = new Date().setDate(new Date().getDate());
     Workout.create(workout)
-    .then(dbWorkout => {
-      res.json(dbWorkout)
-      console.log(dbWorkout)
-    })
-    // db.workout.insert(
-    //   {
-    //     day: new Date().setDate(new Date().getDate()),
-    //     exercises: []
-    //   }, (error, data) => {
-    //     if (error) {
-    //       res.send(error);
-    //     } else {
-    //       res.json(data);
-    //     }
-    //   });
-    // .then(function (dbWorkout) {
-    //   res.json(dbWorkout);
-    //   console.log(dbWorkout)
-    // });
-  });
+      .then(dbWorkout => {
+        res.json(dbWorkout)
+        console.log(dbWorkout)
+      })
 
 
-  // DELETE route for deleting posts
-  app.delete("/api/posts/:id", function (req, res) {
-    db.Post.destroy({
-      where: {
-        id: req.params.id
-      }
-    }).then(function (dbPost) {
-      res.json(dbPost);
-    });
   });
-
-  // PUT route for updating posts
-  app.put("/api/posts", function (req, res) {
-    db.Post.update(
-      req.body,
-      {
-        where: {
-          id: req.body.id
-        }
-      }).then(function (dbPost) {
-        res.json(dbPost);
-      });
-  });
-};
-© 2020 GitHub, Inc.
+}
