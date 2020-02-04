@@ -1,9 +1,10 @@
 const express = require("express");
 var path = require("path");
 const logger = require("morgan");
+const mongojs = require("mongojs");
 const mongoose = require("mongoose");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 
 const db = require("./models");
 
@@ -20,34 +21,23 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populatedb", { 
 
 // HTML Routes
 app.get("/", function (req, res) {
- 
+
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 app.get("/exercise", function (req, res) {
-  
+
   res.sendFile(path.join(__dirname, "./public/exercise.html"));
 
 });
 
 app.get("/stats", function (req, res) {
-  
+
   res.sendFile(path.join(__dirname, "./public/stats.html"));
 });
 
 
 // API Routes
-// Post exercise
-app.post("/api/workouts", (req, res) => {
-  db.Workout.insert(req.body, (error, data) => {
-    if (error) {
-      res.send(error);
-    } else {
-      res.send(data);
-    }
-  });
-});
-
 // Get Workouts(works)
 app.get("/api/workouts", (req, res) => {
   db.Workout.find({}, (error, data) => {
@@ -70,16 +60,69 @@ app.get("/api/workouts/range", (req, res) => {
   });
 });
 
+// POST exercise
+app.post("/api/workouts", function (req, res) {
+  const workout = new Workout();
+  workout.day = new Date().setDate(new Date().getDate());
+  Workout.create(workout)
+    .then(dbWorkout => {
+      res.json(dbWorkout)
+      console.log(dbWorkout)
+    })
+});
+
+
 // PUT Workouts
-// db.collection.update(query, update, [options], [callback])
-app.put("/api/workouts:id", (req, res) => {
-  db.Workout.update(req.body, (error, data) => {
-    if (error) {
-      res.send(error);
-    } else {
-      res.send(data);
-    }
-  });
+app.put("/api/workouts/:id", (req, res) => {
+  console.log(req.body)
+  if (req.body.type === "cardio") {
+    db.Workout.findOneAndUpdate(
+      {
+        _id: mongojs.ObjectId(req.params.id)
+      },
+      {
+        $push: {
+          exercises: {
+            type: req.body.type,
+            name: req.body.name,
+            duration: req.body.duration,
+            distance: req.body.distance
+          }
+        }
+      }
+    )
+      .then(dbWorkout => {
+        res.json(dbWorkout);
+      })
+      .catch(err => {
+        res.json(err);
+      });
+  }
+  if (req.body.type === "resistance") {
+    db.Workout.findOneAndUpdate(
+      {
+        _id: mongojs.ObjectId(req.params.id)
+      },
+      {
+        $push: {
+          exercises: {
+            type: req.body.type,
+            name: req.body.name,
+            duration: req.body.duration,
+            weight: req.body.weight,
+            reps: req.body.reps,
+            sets: req.body.sets
+          }
+        }
+      }
+    )
+      .then(dbWorkout => {
+        res.json(dbWorkout);
+      })
+      .catch(err => {
+        res.json(err);
+      });
+  }
 });
 
 app.listen(PORT, () => {
