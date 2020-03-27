@@ -4,7 +4,7 @@ const logger = require("morgan");
 const mongojs = require("mongojs");
 const mongoose = require("mongoose");
 
-const PORT = process.env.PORT || 3030;
+const PORT = process.env.PORT || 3000;
 
 const db = require("./models");
 
@@ -17,7 +17,13 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populatedb", { useNewUrlParser: true });
+
+
+// To allow heroku acessibility
+mongoose.connect(process.env.MONGODB_URI || "mongodb://mattchley:MvjP72!SMEdzMy3@ds127944.mlab.com:27944/heroku_8lgds0tw", {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 
 // HTML Routes
 app.get("/", function (req, res) {
